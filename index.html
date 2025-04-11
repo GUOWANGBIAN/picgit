@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>批量图片代码生成工具</title>
+    <style>
+        body {
+            margin: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+       .container {
+            display: flex;
+            width: 100%;
+            height: 600px;
+        }
+
+       .left-panel,
+       .right-panel {
+            width: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+       .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        textarea {
+            font-family: monospace;
+            resize: both;
+            min-height: 150px;
+        }
+
+        #urlList {
+            height: 200px;
+        }
+
+        button {
+            width: 100px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #copyButton,
+        #clearButton {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <h3>批量输入配置</h3>
+            <div class="input-group">
+                <label>批量图片网址（每行一个，包含完整图片地址）</label>
+                <textarea id="urlList" placeholder="Imgloc的检视器链接"></textarea>
+            </div>
+            <div class="input-group">
+                <label>初始X值（第一个代码的Image后面的数字，后续依次递增）</label>
+                <input type="number" id="xStart" placeholder="输入数字" value="2">
+            </div>
+            <button onclick="generateBatchCode()">批量生成代码</button>
+        </div>
+        <div class="right-panel">
+            <h3>生成的批量代码</h3>
+            <textarea id="outputCode" placeholder="生成的代码将显示在这里" rows="20" readonly></textarea>
+            <button id="copyButton" onclick="copyCode()">一键复制</button>
+            <button id="clearButton" onclick="clearOutput()">清除</button>
+        </div>
+    </div>
+
+    <script>
+        function generateBatchCode() {
+            const urlList = document.getElementById('urlList').value.trim();
+            let x = document.getElementById('xStart').value.trim();
+
+            // 验证输入
+            if (!urlList || isNaN(x)) {
+                alert('请输入有效的初始X值（数字）和批量图片网址');
+                return;
+            }
+
+            x = parseInt(x, 10); // 转换为整数
+            const urls = urlList.split('\n').map(url => url.trim()).filter(url => url!== '');
+            const result = [];
+
+            for (const url of urls) {
+                // 调整拼接方式，使单行代码内不换行
+                const imgCode = `<img src="${url}" alt="Image ${x}" onclick="window.open('${url}', '_blank')">`;
+                result.push(imgCode);
+                x++; // X值递增
+            }
+
+            document.getElementById('outputCode').value = result.join('\n');
+        }
+
+        function copyCode() {
+            const outputCode = document.getElementById('outputCode');
+            outputCode.select();
+            document.execCommand('copy');
+            alert('代码已复制');
+        }
+
+        function clearOutput() {
+            document.getElementById('outputCode').value = '';
+            alert('已清除生成的代码');
+        }
+    </script>
+</body>
+</html>
